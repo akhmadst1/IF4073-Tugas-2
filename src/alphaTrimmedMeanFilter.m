@@ -1,32 +1,45 @@
-% Fungsi Alpha-Trimmed Mean Filter
+% Alpha-Trimmed Mean Filter Function
 function output = alphaTrimmedMeanFilter(img, kernel_size, d)
-    % Menghitung ukuran padding berdasarkan ukuran kernel
+    % Calculate padding size based on kernel
     pad_size = floor(kernel_size / 2);
     
-    % Menambahkan padding pada citra asli (img) untuk menangani batas gambar
-    % dengan metode 'replicate', yang mereplikasi piksel tepi.
-    img_padded = padarray(img, [pad_size pad_size], 'replicate');
+    % Initialize output with the same type as the input image
+    output = zeros(size(img), 'like', img);
     
-    % Menginisialisasi citra keluaran dengan ukuran yang sama seperti gambar asli
-    % dan tipe data uint8.
-    output = zeros(size(img), 'uint8');
-    
-    % Melakukan iterasi pada setiap piksel di citra asli
-    for i = 1:size(img, 1)
-        for j = 1:size(img, 2)
-            % Mengambil wilayah (region) di sekitar piksel sesuai ukuran kernel
-            region = img_padded(i:i+kernel_size-1, j:j+kernel_size-1);
-            
-            % Mengurutkan piksel dalam region dari terkecil ke terbesar
-            sorted_region = sort(region(:));
-            
-            % Memangkas (trim) piksel yang berjumlah d dari bagian atas dan bawah
-            % daerah yang sudah diurutkan
-            trimmed_region = sorted_region(ceil(d/2)+1 : end-floor(d/2));
-            
-            % Menghitung rata-rata dari piksel yang tersisa setelah pemangkasan
-            % dan menetapkannya ke piksel yang sesuai di output.
-            output(i, j) = uint8(mean(trimmed_region));
+    % Check if the image is grayscale or RGB
+    if size(img, 3) == 1
+        % Grayscale image: apply filter directly
+        img_padded = padarray(double(img), [pad_size pad_size], 'replicate');
+        output = applyAlphaTrimmed(img_padded, kernel_size, d);
+    else
+        % RGB image: apply filter to each channel separately
+        for c = 1:3
+            img_padded = padarray(double(img(:, :, c)), [pad_size pad_size], 'replicate');
+            output(:, :, c) = applyAlphaTrimmed(img_padded, kernel_size, d);
         end
     end
+end
+
+% Helper function to apply alpha-trimmed mean filter to a single channel
+function filtered = applyAlphaTrimmed(img_padded, kernel_size, d)
+    % Initialize the filtered image
+    filtered = zeros(size(img_padded) - kernel_size + 1, 'double');
+    
+    % Iterate over each pixel in the original image
+    for i = 1:size(filtered, 1)
+        for j = 1:size(filtered, 2)
+            % Extract region around the current pixel
+            region = img_padded(i:i+kernel_size-1, j:j+kernel_size-1);
+            
+            % Sort the pixels in the region and trim `d` pixels
+            sorted_region = sort(region(:));
+            trimmed_region = sorted_region(ceil(d/2)+1 : end-floor(d/2));
+            
+            % Calculate the mean of the trimmed region
+            filtered(i, j) = mean(trimmed_region);
+        end
+    end
+    
+    % Convert back to uint8 for display
+    filtered = uint8(filtered);
 end

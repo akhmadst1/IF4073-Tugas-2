@@ -1,35 +1,46 @@
-% Fungsi Contraharmonic Mean Filter
-function output = contraharmonicMeanFilter(img, kernel_size, Q)
-    % Menghitung ukuran padding berdasarkan ukuran kernel
-    pad_size = floor(kernel_size / 2);
-    
-    % Menambahkan padding pada citra asli (img) setelah dikonversi ke tipe
-    % double untuk presisi lebih tinggi dalam perhitungan. Padding menggunakan
-    % metode 'replicate' untuk mereplikasi piksel di tepi.
-    img_padded = padarray(double(img), [pad_size pad_size], 'replicate');
-    
-    % Menginisialisasi citra keluaran dengan ukuran yang sama seperti gambar asli
-    % dan tipe data uint8.
-    output = zeros(size(img), 'uint8');
-    
-    % Melakukan iterasi pada setiap piksel di citra asli
-    for i = 1:size(img, 1)
-        for j = 1:size(img, 2)
-            % Mengambil wilayah (region) di sekitar piksel sesuai ukuran kernel
-            region = img_padded(i:i+kernel_size-1, j:j+kernel_size-1);
-            
-            % Menghitung nilai pembilang (num) sebagai jumlah dari setiap elemen
-            % dalam region dipangkatkan (Q + 1).
-            num = sum(region(:).^(Q + 1));
-            
-            % Menghitung nilai penyebut (den) sebagai jumlah dari setiap elemen
-            % dalam region dipangkatkan Q, ditambah eps untuk mencegah pembagian
-            % dengan nol.
-            den = sum(region(:).^Q + eps);
-            
-            % Menghitung nilai Contraharmonic Mean untuk piksel (i, j)
-            % dan menetapkannya pada citra keluaran
-            output(i, j) = uint8(num / den);
+function resultImage = contraharmonicMeanFilter(image, kernel_size, Q)
+    % Convert image to double
+    image = im2double(image);
+    [M, N, C] = size(image);  % Get dimensions (C will be 1 for grayscale)
+
+    % Initialize result image
+    resultImage = zeros(M, N, C);  % Keep as double for accuracy
+
+    % Calculate kernel center
+    kernelCenterRow = floor(kernel_size / 2) + 1;
+    kernelCenterCol = floor(kernel_size / 2) + 1;
+
+    % Perform convolution for each channel (handles grayscale too)
+    for c = 1:C
+        channel = image(:, :, c);  % Extract channel
+        for i = 1:M
+            for j = 1:N
+                numerator = 0;
+                denumerator = 0;
+
+                for k = 1:kernel_size
+                    for l = 1:kernel_size
+                        row = i + k - kernelCenterRow;
+                        col = j + l - kernelCenterCol;
+
+                        % Check boundaries
+                        if row >= 1 && row <= M && col >= 1 && col <= N
+                            numerator = numerator + channel(row, col)^(Q + 1);  % Accumulate numerator
+                            denumerator = denumerator + channel(row, col)^Q;  % Accumulate denominator
+                        end
+                    end
+                end
+
+                % Calculate contraharmonic mean
+                if denumerator > 0
+                    resultImage(i, j, c) = numerator / denumerator;  % Avoid division by zero
+                else
+                    resultImage(i, j, c) = 0;  % Fallback for undefined mean
+                end
+            end
         end
     end
+
+    % Convert result image back to uint8 for displaying
+    resultImage = uint8(resultImage * 255);
 end

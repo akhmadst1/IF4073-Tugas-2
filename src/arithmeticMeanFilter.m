@@ -1,10 +1,17 @@
-% Fungsi Arithmetic Mean Filter
+% Arithmetic Mean Filter Function
 function output = arithmeticMeanFilter(img, kernel_size)
-    % Membuat kernel filter rata-rata (average) dengan ukuran sesuai kernel_size
+    % Create an average filter kernel of the specified size
     h = fspecial('average', kernel_size);
     
-    % Menerapkan filter rata-rata pada citra (img) menggunakan kernel yang telah dibuat
-    % Opsi 'replicate' digunakan untuk menangani piksel di tepi gambar dengan
-    % mereplikasi nilai-nilai piksel terdekat.
-    output = imfilter(img, h, 'replicate');
+    % Check if the image is grayscale or RGB
+    if size(img, 3) == 1
+        % Grayscale image: apply filter directly
+        output = imfilter(img, h, 'replicate');
+    else
+        % RGB image: apply filter to each channel separately
+        output = zeros(size(img), 'like', img);  % Initialize output with same type and size as input
+        for c = 1:3
+            output(:, :, c) = imfilter(img(:, :, c), h, 'replicate');
+        end
+    end
 end
