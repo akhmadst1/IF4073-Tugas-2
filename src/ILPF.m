@@ -1,4 +1,4 @@
-function resultImage = ILPF(inputImage)
+function resultImage = ILPF(inputImage, D0)
     % Fungsi untuk melakukan smoothing/blurring menggunakan Ideal Low-Pass Filter (ILPF)
     
     % Step 1: Persiapan padding citra
@@ -28,7 +28,7 @@ function resultImage = ILPF(inputImage)
     fourierImage = fft2(double(resultImage));
 
     % Step 3: Membuat filter ideal low-pass
-    H = createILPFFilter(P, Q);
+    H = createILPFFilter(P, Q, D0);
 
     % Step 4: Terapkan filter pada citra di domain frekuensi
     fourierImage = fourierImage .* H;

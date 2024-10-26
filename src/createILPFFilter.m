@@ -1,18 +1,15 @@
-function filter = createILPFFilter(rows, cols)
+function filter = createILPFFilter(rows, cols, D0)
     % Fungsi untuk membuat Ideal Low-Pass Filter (ILPF) dalam domain frekuensi
     % Input:
     % - rows: jumlah baris dari filter (ukuran citra hasil padding)
     % - cols: jumlah kolom dari filter (ukuran citra hasil padding)
+    % - D0: radius cutoff untuk filter low-pass
     % Output:
     % - filter: filter ideal low-pass berbentuk lingkaran di domain frekuensi
     
     % Inisialisasi ukuran dari filter
     P = rows;
     Q = cols;
-
-    % Tentukan radius cutoff (D0) untuk filter low-pass
-    % 0.05 * P digunakan untuk menentukan D0 secara proporsional dengan ukuran citra
-    D0 = 0.05 * P;
     
     % Buat vektor koordinat u dan v
     u = 0:(P-1);
