@@ -29,7 +29,7 @@ function resultImage = BLPF(inputImage, D0, n)
 
     % Step 3: Membuat filter Butterworth low-pass
     % D0 digunakan untuk menentukan ukuran filter berdasarkan frekuensi
-    H = createBLPFFilter(P, Q, D0, n);
+    H = BLPFFilter(P, Q, D0, n);
 
     % Step 4: Terapkan filter pada citra di domain frekuensi
     fourierImage = fourierImage .* H;

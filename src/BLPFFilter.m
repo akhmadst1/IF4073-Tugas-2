@@ -1,11 +1,12 @@
-function filter = createGLPFFilter(rows, cols, D0)
-    % Fungsi untuk membuat Gaussian Low-Pass Filter (GLPF) dalam domain frekuensi
+function filter = BLPFFilter(rows, cols, D0, n)
+    % Fungsi untuk membuat Butterworth Low-Pass Filter (BLPF) dalam domain frekuensi
     % Input:
     % - rows: jumlah baris dari filter (ukuran citra hasil padding)
     % - cols: jumlah kolom dari filter (ukuran citra hasil padding)
     % - D0: radius cutoff untuk filter low-pass
+    % - n: orde filter Butterworth
     % Output:
-    % - filter: filter Gaussian low-pass berbentuk lingkaran di domain frekuensi
+    % - filter: filter Butterworth low-pass berbentuk lingkaran di domain frekuensi
     
     % Inisialisasi ukuran dari filter
     P = rows;
@@ -27,10 +28,10 @@ function filter = createGLPFFilter(rows, cols, D0)
     % Hitung jarak D setiap titik dalam filter dari pusat
     D = sqrt(U.^2 + V.^2);
 
-    % Buat filter Gaussian H
+    % Buat filter Butterworth H
     % Filter ini akan memberikan bobot yang lebih tinggi pada frekuensi rendah
-    % dan mengurangi bobot pada frekuensi tinggi, menghasilkan smoothing
-    H = exp(-(D.^2)./(2*(D0^2)));
+    % dan mengurangi bobot pada frekuensi tinggi, sehingga menghasilkan efek smoothing
+    H = 1 ./ (1 + (D ./ D0).^(2 * n));
 
     % Kembalikan hasil filter
     filter = H;

@@ -29,7 +29,7 @@ function resultImage = GLPF(inputImage, D0)
 
     % Step 3: Membuat filter Gaussian low-pass
     % D0 digunakan untuk menentukan ukuran filter berdasarkan frekuensi
-    H = createGLPFFilter(P, Q, D0);
+    H = GLPFFilter(P, Q, D0);
 
     % Step 4: Terapkan filter pada citra di domain frekuensi
     fourierImage = fourierImage .* H;

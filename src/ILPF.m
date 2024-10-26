@@ -28,7 +28,7 @@ function resultImage = ILPF(inputImage, D0)
     fourierImage = fft2(double(resultImage));
 
     % Step 3: Membuat filter ideal low-pass
-    H = createILPFFilter(P, Q, D0);
+    H = ILPFFilter(P, Q, D0);
 
     % Step 4: Terapkan filter pada citra di domain frekuensi
     fourierImage = fourierImage .* H;

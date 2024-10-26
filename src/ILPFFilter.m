@@ -1,4 +1,4 @@
-function filter = createILPFFilter(rows, cols, D0)
+function filter = ILPFFilter(rows, cols, D0)
     % Fungsi untuk membuat Ideal Low-Pass Filter (ILPF) dalam domain frekuensi
     % Input:
     % - rows: jumlah baris dari filter (ukuran citra hasil padding)
